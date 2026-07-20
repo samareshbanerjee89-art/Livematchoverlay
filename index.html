@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Live Score Ribbon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Bebas+Neue&family=Anton&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Rajdhani', sans-serif; }
+  body{ background: transparent !important; }
+  :root{--accent:#00d4ff;--gold:#ffd700;--green:#00e676;--red:#ff1744;--four:#00bfff;--six:#ff6600;--muted:#7899cc;--panel2:#111e34;--white:#eaf4ff;}
+
+  .rib-wrap{position:fixed;left:0;right:0;bottom:0;z-index:600;}
+  .rtgt-i{display:flex;gap:5px;align-items:center;}
+  .rtgt-v{font-family:'Orbitron',sans-serif;font-weight:700;}
+
+  /* ═══ THEME 1 — IPL ═══ */
+  .rib-ipl-wrap .ribbon-main{background:linear-gradient(90deg,#00060e 0%,#030f22 40%,#030f22 60%,#00060e 100%);border-top:2.5px solid var(--accent);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;height:64px;overflow:hidden;box-shadow:0 -6px 40px rgba(0,212,255,.22),inset 0 1px 0 rgba(0,212,255,.08);position:relative;}
+  .rt{display:flex;align-items:center;gap:8px;padding:0 16px;min-width:170px;}
+  .rt.right{flex-direction:row-reverse;}
+  .rtlogo{width:38px;height:38px;border-radius:50%;background:var(--panel2);border:2px solid rgba(0,212,255,.3);display:flex;align-items:center;justify-content:center;font-size:17px;overflow:hidden;flex-shrink:0;}
+  .rtlogo img{width:100%;height:100%;object-fit:contain;}
+  .rtname{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .rtscore{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;line-height:1;}
+  .rt.batting .rtscore{color:#fff;} .rt.bowling .rtscore{color:var(--muted);font-size:21px;} .rt.batting .rtname{color:var(--accent);}
+  .rc-rib{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 12px;border-left:1px solid rgba(0,212,255,.12);border-right:1px solid rgba(0,212,255,.12);min-width:240px;}
+  .rc-bats{display:flex;gap:16px;} .rc-bat{display:flex;align-items:center;gap:5px;}
+  .rc-bn{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:#fff;white-space:nowrap;}
+  .rc-bs{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--gold);} .sm{color:var(--green);font-size:9px;}
+  .rc-bwl{display:flex;gap:6px;align-items:center;}
+  .rc-bwln{font-family:'Rajdhani',sans-serif;font-size:11px;color:#7899cc;white-space:nowrap;}
+  .rc-bwls{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--muted);}
+  .rc-ob{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;}
+  .rb{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:7px;font-weight:700;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);}
+  .rb.r4{border-color:var(--four);color:var(--four);background:rgba(0,191,255,.15);} .rb.r6{border-color:var(--six);color:var(--six);background:rgba(255,102,0,.15);} .rb.rW{border-color:var(--red);color:var(--red);background:rgba(255,23,68,.15);} .rb.empty{opacity:.18;}
+  .rc-ri{display:flex;flex-direction:column;align-items:center;} .rc-crrl{font-size:8px;color:var(--muted);letter-spacing:2px;} .rc-crrv{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--gold);font-weight:700;}
+  .rib-tgt{background:linear-gradient(90deg,#190900,#2a1000);border-top:1px solid rgba(255,102,0,.5);padding:4px 14px;display:flex;justify-content:center;gap:20px;font-size:10px;}
+  .rtgt-l{color:rgba(255,153,80,.7);letter-spacing:1px;text-transform:uppercase;} .rib-tgt .rtgt-v{color:var(--six);}
+
+  /* ═══ THEME 2 — GOLD ═══ */
+  .rib-gold-wrap .rib-gold-bar{background:linear-gradient(90deg,#0e0900,#1c1200,#0e0900);border-top:3px solid var(--gold);height:56px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;box-shadow:0 -8px 50px rgba(255,215,0,.18);overflow:hidden;position:relative;}
+  .rg-side{display:flex;align-items:center;gap:10px;padding:0 14px;min-width:160px;} .rg-side.right{flex-direction:row-reverse;}
+  .rg-logo{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,215,0,.5);background:#1a0f00;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;flex-shrink:0;} .rg-logo img{width:100%;height:100%;object-fit:contain;}
+  .rg-name{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,215,0,.7);}
+  .rg-score{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;line-height:1;color:#fff;} .rg-score.bowl{color:rgba(255,215,0,.35);font-size:18px;}
+  .rg-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 10px;border-left:1px solid rgba(255,215,0,.15);border-right:1px solid rgba(255,215,0,.15);}
+  .rg-bat-row{display:flex;gap:14px;align-items:center;} .rg-bat-nm{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#fff;} .rg-bat-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--gold);}
+  .rg-divider{width:1px;height:20px;background:rgba(255,215,0,.2);}
+  .rg-bwl-row{display:flex;gap:8px;align-items:center;} .rg-bwl-nm{font-family:'Rajdhani',sans-serif;font-size:10px;color:rgba(255,200,80,.6);} .rg-bwl-sc{font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,215,0,.4);}
+  .rg-crr{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold);font-weight:700;} .rg-ob{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;}
+  .rg-tgt{background:linear-gradient(90deg,#1a0a00,#2c1500);border-top:1px solid rgba(255,165,0,.4);padding:3px 12px;display:flex;justify-content:center;gap:16px;font-size:9px;}
+  .rg-tgt .rtgt-v{color:var(--gold);}
+
+  /* ═══ THEME 3 — NEON ═══ */
+  .rib-neon-wrap .rib-neon-bar{background:#010a03;border-top:2px solid #00ff44;height:52px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;box-shadow:0 -6px 40px rgba(0,255,68,.25);overflow:hidden;position:relative;}
+  .rn-side{display:flex;align-items:center;gap:9px;padding:0 12px;min-width:150px;} .rn-side.right{flex-direction:row-reverse;}
+  .rn-logo{width:34px;height:34px;border-radius:6px;border:1px solid rgba(0,255,68,.4);background:#001a06;display:flex;align-items:center;justify-content:center;font-size:15px;overflow:hidden;flex-shrink:0;box-shadow:0 0 8px rgba(0,255,68,.2);} .rn-logo img{width:100%;height:100%;object-fit:contain;}
+  .rn-name{font-family:'Orbitron',sans-serif;font-size:9px;color:#00cc33;letter-spacing:1px;text-transform:uppercase;}
+  .rn-score{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;line-height:1;color:#00ff44;text-shadow:0 0 12px rgba(0,255,68,.5);} .rn-score.bowl{color:rgba(0,200,50,.3);font-size:17px;}
+  .rn-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 10px;border-left:1px solid rgba(0,255,68,.1);border-right:1px solid rgba(0,255,68,.1);}
+  .rn-bat-row{display:flex;gap:12px;align-items:center;} .rn-nm{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#fff;} .rn-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:#00cc33;}
+  .rn-bwl{font-family:'Rajdhani',sans-serif;font-size:10px;color:rgba(0,200,50,.5);}
+  .rn-crr{font-family:'Orbitron',sans-serif;font-size:11px;color:#00ff44;font-weight:700;text-shadow:0 0 8px rgba(0,255,68,.4);}
+  .rn-balls{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;} .rn-ball{width:17px;height:17px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'Orbitron',sans-serif;font-weight:700;border:1px solid rgba(0,255,68,.2);background:rgba(0,255,68,.05);color:rgba(0,255,68,.4);}
+  .rn-ball.r4{border-color:var(--four);color:var(--four);background:rgba(0,191,255,.15);} .rn-ball.r6{border-color:#00ff44;color:#00ff44;background:rgba(0,255,68,.15);box-shadow:0 0 6px rgba(0,255,68,.4);} .rn-ball.rW{border-color:var(--red);color:var(--red);} .rn-ball.empty{opacity:.2;}
+  .rn-tgt{background:#001a05;border-top:1px solid rgba(0,255,68,.3);padding:3px 12px;display:flex;justify-content:center;gap:16px;font-size:9px;} .rn-tgt .rtgt-v{color:#00ff44;}
+
+  /* ═══ THEME 4 — FIRE ═══ */
+  .rib-fire-wrap .rib-fire-bar{background:linear-gradient(90deg,#0e0000,#1c0300,#0e0000);border-top:3px solid #ff2200;height:56px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;box-shadow:0 -8px 50px rgba(255,34,0,.2);overflow:hidden;}
+  .rf-side{display:flex;align-items:center;gap:10px;padding:0 14px;min-width:155px;} .rf-side.right{flex-direction:row-reverse;}
+  .rf-logo{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,60,0,.5);background:#1a0000;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;flex-shrink:0;} .rf-logo img{width:100%;height:100%;object-fit:contain;}
+  .rf-name{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#ff6644;}
+  .rf-score{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;line-height:1;color:#fff;} .rf-score.bowl{color:rgba(200,50,20,.4);font-size:18px;}
+  .rf-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 10px;border-left:1px solid rgba(255,60,0,.15);border-right:1px solid rgba(255,60,0,.15);}
+  .rf-bat-row{display:flex;gap:12px;align-items:center;} .rf-nm{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#fff;} .rf-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:#ff6644;}
+  .rf-bwl{font-family:'Rajdhani',sans-serif;font-size:10px;color:rgba(255,100,50,.5);}
+  .rf-crr{font-family:'Orbitron',sans-serif;font-size:12px;color:#ff4400;font-weight:700;}
+  .rf-balls{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;} .rf-ball{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'Orbitron',sans-serif;font-weight:700;border:1px solid rgba(255,60,0,.25);background:rgba(255,34,0,.07);color:rgba(255,80,30,.5);}
+  .rf-ball.r4{border-color:var(--four);color:var(--four);} .rf-ball.r6{border-color:#ff4400;color:#ff4400;box-shadow:0 0 6px rgba(255,68,0,.5);} .rf-ball.rW{border-color:#ff1744;color:#ff1744;} .rf-ball.empty{opacity:.2;}
+  .rf-tgt{background:#140000;border-top:1px solid rgba(255,60,0,.3);padding:3px 12px;display:flex;justify-content:center;gap:16px;font-size:9px;} .rf-tgt .rtgt-v{color:#ff4400;}
+
+  /* ═══ THEME 5 — GALAXY ═══ */
+  .rib-galaxy-wrap .rib-galaxy-bar{background:linear-gradient(90deg,#06000f,#0e0020,#06000f);border-top:2px solid #aa44ff;height:54px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;box-shadow:0 -8px 48px rgba(160,60,255,.2);overflow:hidden;position:relative;}
+  .rpg-side{display:flex;align-items:center;gap:9px;padding:0 13px;min-width:150px;} .rpg-side.right{flex-direction:row-reverse;}
+  .rpg-logo{width:34px;height:34px;border-radius:50%;border:2px solid rgba(180,80,255,.4);background:#0e0020;display:flex;align-items:center;justify-content:center;font-size:15px;overflow:hidden;flex-shrink:0;box-shadow:0 0 10px rgba(160,60,255,.2);} .rpg-logo img{width:100%;height:100%;object-fit:contain;}
+  .rpg-name{font-family:'Orbitron',sans-serif;font-size:8px;color:#cc88ff;letter-spacing:1px;text-transform:uppercase;}
+  .rpg-score{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;line-height:1;color:#fff;} .rpg-score.bowl{color:rgba(160,60,255,.3);font-size:16px;}
+  .rpg-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 10px;border-left:1px solid rgba(160,60,255,.12);border-right:1px solid rgba(160,60,255,.12);}
+  .rpg-bat-row{display:flex;gap:12px;align-items:center;} .rpg-nm{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#fff;} .rpg-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:#cc88ff;}
+  .rpg-bwl{font-family:'Rajdhani',sans-serif;font-size:10px;color:rgba(180,80,255,.5);}
+  .rpg-crr{font-family:'Orbitron',sans-serif;font-size:11px;color:#aa44ff;font-weight:700;}
+  .rpg-balls{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;} .rpg-ball{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'Orbitron',sans-serif;font-weight:700;border:1px solid rgba(160,60,255,.25);background:rgba(160,60,255,.07);color:rgba(180,80,255,.5);}
+  .rpg-ball.r4{border-color:#66aaff;color:#66aaff;} .rpg-ball.r6{border-color:#cc44ff;color:#cc44ff;box-shadow:0 0 6px rgba(200,60,255,.4);} .rpg-ball.rW{border-color:#ff3366;color:#ff3366;} .rpg-ball.empty{opacity:.2;}
+  .rpg-tgt{background:#0a0018;border-top:1px solid rgba(160,60,255,.25);padding:3px 12px;display:flex;justify-content:center;gap:16px;font-size:9px;} .rpg-tgt .rtgt-v{color:#cc44ff;}
+
+  /* ═══ THEME 6 — CLEAN ═══ */
+  .rib-clean-wrap .rib-clean-bar{background:#ffffff;border-top:3px solid #0066cc;height:54px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;box-shadow:0 -4px 20px rgba(0,0,0,.15);overflow:hidden;}
+  .rcl-side{display:flex;align-items:center;gap:10px;padding:0 14px;min-width:155px;} .rcl-side.right{flex-direction:row-reverse;}
+  .rcl-logo{width:36px;height:36px;border-radius:50%;border:2px solid #dde;background:#f0f2f5;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;flex-shrink:0;} .rcl-logo img{width:100%;height:100%;object-fit:contain;}
+  .rcl-name{font-family:'Orbitron',sans-serif;font-size:9px;color:#0055aa;letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+  .rcl-score{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;line-height:1;color:#111;} .rcl-score.bowl{color:#aaa;font-size:18px;}
+  .rcl-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 10px;border-left:1px solid #dde;border-right:1px solid #dde;}
+  .rcl-bat-row{display:flex;gap:14px;align-items:center;} .rcl-nm{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:#222;} .rcl-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:#0066cc;}
+  .rcl-bwl{font-family:'Rajdhani',sans-serif;font-size:10px;color:#888;}
+  .rcl-crr{font-family:'Orbitron',sans-serif;font-size:12px;color:#0066cc;font-weight:700;}
+  .rcl-balls{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;} .rcl-ball{width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'Orbitron',sans-serif;font-weight:700;border:1px solid #ccc;background:#f5f5f5;color:#999;}
+  .rcl-ball.r4{border-color:#0099dd;color:#0099dd;background:#eef6ff;} .rcl-ball.r6{border-color:#ff6600;color:#ff6600;background:#fff4ee;} .rcl-ball.rW{border-color:#cc0033;color:#cc0033;background:#fff0f2;} .rcl-ball.empty{opacity:.3;}
+  .rcl-tgt{background:#fff8ee;border-top:2px solid #ff9900;padding:3px 12px;display:flex;justify-content:center;gap:16px;font-size:9px;} .rcl-tgt .rtgt-l{color:#c77000;} .rcl-tgt .rtgt-v{color:#cc6600;}
+
+  /* ═══ THEME 7 — TICKER ═══ */
+  .rib-ticker-wrap .ribbon-ticker{background:linear-gradient(90deg,#000814,#001428,#000814);border-top:2px solid var(--gold);height:40px;display:flex;align-items:center;padding:0 14px;gap:12px;overflow:hidden;box-shadow:0 -4px 30px rgba(255,215,0,.15);}
+  .tk-nm{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;}
+  .tk-sc{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+  .tk-sep{color:rgba(255,255,255,.2);font-size:14px;}
+  .tk-bat{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;white-space:nowrap;color:rgba(255,255,255,.85);}
+  .tk-balls{display:flex;gap:3px;} .tb{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'Orbitron',sans-serif;font-weight:700;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);}
+  .tb.r4{border-color:var(--four);color:var(--four);} .tb.r6{border-color:var(--six);color:var(--six);} .tb.rW{border-color:var(--red);color:var(--red);} .tb.empty{opacity:.2;}
+  .tk-crr{font-family:'Orbitron',sans-serif;font-size:9px;color:var(--gold);margin-left:auto;white-space:nowrap;}
+
+  /* ═══ THEME 8 — GLASS ═══ */
+  .rib-glass-wrap .rib-glass-bar{background:rgba(8,18,36,.75);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-top:1px solid rgba(255,255,255,.12);height:48px;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;box-shadow:0 -4px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08);}
+  .rgl-side{display:flex;align-items:center;gap:9px;padding:0 16px;min-width:150px;} .rgl-side.right{flex-direction:row-reverse;}
+  .rgl-logo{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;flex-shrink:0;} .rgl-logo img{width:100%;height:100%;object-fit:contain;}
+  .rgl-name{font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;}
+  .rgl-score{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;line-height:1;color:rgba(255,255,255,.9);} .rgl-score.bowl{color:rgba(255,255,255,.25);font-size:15px;}
+  .rgl-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 12px;border-left:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.08);}
+  .rgl-bat-row{display:flex;gap:14px;align-items:center;} .rgl-nm{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.85);} .rgl-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,215,0,.7);}
+  .rgl-bwl{font-family:'Rajdhani',sans-serif;font-size:10px;color:rgba(255,255,255,.35);}
+  .rgl-crr{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,215,0,.75);font-weight:700;}
+  .rgl-balls{display:flex;flex-wrap:wrap;gap:3px;max-width:130px;} .rgl-ball{width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'Orbitron',sans-serif;font-weight:700;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);}
+  .rgl-ball.r4{border-color:rgba(0,191,255,.6);color:rgba(0,191,255,.8);} .rgl-ball.r6{border-color:rgba(255,102,0,.6);color:rgba(255,102,0,.8);} .rgl-ball.rW{border-color:rgba(255,23,68,.6);color:rgba(255,23,68,.8);} .rgl-ball.empty{opacity:.2;}
+  .rgl-tgt .rtgt-v{color:rgba(255,215,0,.75);} .rgl-tgt .rtgt-l{color:rgba(255,255,255,.3);}
+
+  /* ═══ THEME 9 — LOCAL ═══ */
+  .rib-local-wrap .rib-local-bar{background:#000;display:flex;align-items:stretch;height:50px;overflow:hidden;border-top:3px solid #e00;box-shadow:0 -4px 18px rgba(220,0,0,.4);font-family:'Arial Narrow',Arial,sans-serif;position:relative;width:100%;}
+  .rloc-team-block{background:#b50010;display:flex;flex-direction:column;justify-content:center;padding:2px 10px;min-width:80px;flex-shrink:0;}
+  .rloc-team-name{font-size:9px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:1px;line-height:1.2;}
+  .rloc-left{display:flex;flex-direction:column;justify-content:center;padding:2px 8px;background:#1c1c1c;gap:1px;flex-shrink:0;border-right:1px solid #333;min-width:80px;}
+  .rloc-batsmen{display:flex;flex-direction:column;gap:1px;} .rloc-bat{display:flex;align-items:center;gap:3px;}
+  .rloc-bat-name{font-size:11px;font-weight:700;color:#bbb;} .rloc-bat-name.striker{color:#ffe600;font-size:12px;}
+  .rloc-bat-score{font-size:10px;color:#999;font-weight:600;} .rloc-bat-score.striker-sc{color:#fff;font-weight:700;}
+  .rloc-striker-block{background:#e30613;display:flex;align-items:center;padding:2px 12px;gap:6px;flex-shrink:0;}
+  .rloc-striker-arr{font-size:16px;color:#fff;font-weight:900;}
+  .rloc-striker-info{display:flex;flex-direction:column;align-items:flex-start;}
+  .rloc-striker-sc{font-size:20px;font-weight:900;color:#fff;line-height:1;letter-spacing:1px;}
+  .rloc-striker-name{font-size:9px;color:rgba(255,255,255,.85);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+  .rloc-center{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a0000;flex:1;padding:2px 14px;border-left:1px solid #440000;border-right:1px solid #440000;}
+  .rloc-center-top{display:flex;align-items:baseline;gap:5px;}
+  .rloc-team-abbr{font-size:9px;font-weight:900;color:#ff6666;letter-spacing:2px;}
+  .rloc-main-score{font-size:22px;font-weight:900;color:#fff;line-height:1;letter-spacing:1px;}
+  .rloc-meta{display:flex;gap:6px;align-items:center;margin-top:1px;} .rloc-ov{font-size:9px;color:rgba(255,255,255,.9);font-weight:700;} .rloc-rr{font-size:9px;color:#ff9999;}
+  .rloc-balls{display:flex;flex-wrap:wrap;gap:2px;margin-top:2px;max-width:110px;}
+  .rloc-b{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;color:rgba(255,255,255,.6);}
+  .rloc-b.rW{background:#cc0000;border-color:#ff3333;color:#fff;} .rloc-b.r4{background:#004400;border-color:#00bb44;color:#fff;} .rloc-b.r6{background:#554400;border-color:#ffbb00;color:#fff;} .rloc-b.empty{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);}
+  .rloc-right{display:flex;flex-direction:column;justify-content:center;padding:2px 8px;background:#1c1c1c;gap:1px;flex-shrink:0;border-left:1px solid #333;min-width:90px;}
+  .rloc-bwl-name-top{font-size:11px;font-weight:700;color:#ffe600;text-transform:uppercase;} .rloc-bwl-stat{font-size:10px;color:#ccc;}
+  .rloc-bowl-team-block{background:#004d15;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2px 10px;min-width:75px;flex-shrink:0;border-left:1px solid #006622;}
+  .rloc-bowl-team{font-size:9px;font-weight:900;color:#44ff88;text-transform:uppercase;letter-spacing:1px;text-align:center;line-height:1.2;}
+  .rloc-tgt-strip{background:#1a0000;border-top:1px solid #880000;padding:2px 14px;display:flex;gap:18px;font-size:9px;}
+  .rloc-tgt-item{display:flex;gap:4px;align-items:center;} .rloc-tgt-l{color:rgba(255,120,100,.8);text-transform:uppercase;letter-spacing:1px;} .rloc-tgt-v{font-family:'Orbitron',sans-serif;color:#ff6b6b;font-weight:700;}
+
+  /* ═══ Full-screen animation overlays (FX / Break / 3rd Umpire) ═══ */
+  .dx-overlay{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;}
+  .dx-overlay.show{display:flex;}
+  #dx-break{background:radial-gradient(ellipse at 50% 40%,#0d1e38 0%,#04080f 80%);backdrop-filter:blur(14px) brightness(.6);}
+  .dxbrk-content{text-align:center;padding:40px 30px;}
+  .dxbrk-icon{font-size:110px;margin-bottom:20px;animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
+  .dxbrk-title{font-family:'Bebas Neue',sans-serif;font-weight:900;font-size:120px;letter-spacing:10px;margin-bottom:10px;line-height:1;color:#00d4ff;}
+  .dxbrk-sub{font-family:'Orbitron',sans-serif;font-size:18px;letter-spacing:6px;margin-bottom:28px;color:var(--muted);}
+  .dxbrk-info{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px 32px;display:inline-flex;gap:32px;}
+  .dxbrk-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .dxbrk-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+  .dxbrk-val{font-family:'Orbitron',sans-serif;font-size:22px;color:var(--white);font-weight:700;}
+
+  #dx-tu{background:rgba(0,0,0,.93);backdrop-filter:blur(8px);}
+  .dxtu-wrap{text-align:center;position:relative;}
+  .dxtu-eye{font-size:100px;margin-bottom:16px;filter:drop-shadow(0 0 40px #00d4ff);animation:eyePulse 1.5s ease-in-out infinite;}
+  @keyframes eyePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+  .dxtu-title{font-family:'Bebas Neue',sans-serif;font-weight:900;font-size:120px;letter-spacing:10px;color:var(--accent);line-height:1;margin-bottom:8px;filter:drop-shadow(0 0 30px var(--accent));animation:titleGlow 2s ease-in-out infinite alternate;}
+  @keyframes titleGlow{0%{filter:drop-shadow(0 0 20px var(--accent));}100%{filter:drop-shadow(0 0 60px var(--accent));}}
+  .dxtu-sub{font-family:'Orbitron',sans-serif;font-size:16px;letter-spacing:6px;color:var(--muted);margin-bottom:32px;}
+  .dxtu-pending-box{display:inline-flex;align-items:center;gap:20px;background:rgba(0,212,255,.05);border:2px solid rgba(0,212,255,.3);border-radius:18px;padding:18px 36px;animation:pendingPulse 1.5s ease-in-out infinite;}
+  @keyframes pendingPulse{0%,100%{border-color:rgba(0,212,255,.3);box-shadow:0 0 20px rgba(0,212,255,.1);}50%{border-color:rgba(0,212,255,.8);box-shadow:0 0 50px rgba(0,212,255,.3);}}
+  .dxtu-spinner{width:44px;height:44px;border:4px solid transparent;border-top-color:var(--accent);border-right-color:var(--accent);border-radius:50%;animation:tuSpin .9s linear infinite;}
+  @keyframes tuSpin{to{transform:rotate(360deg);}}
+  .dxtu-pending-text{font-family:'Orbitron',sans-serif;font-size:20px;color:var(--accent);letter-spacing:3px;font-weight:700;}
+  .dxtu-decision{font-family:'Bebas Neue',sans-serif;font-weight:900;font-size:150px;letter-spacing:10px;line-height:1;display:none;animation:decisionAppear .4s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes decisionAppear{from{transform:scale(0) rotate(-5deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+  .dxtu-decision.out{color:var(--red);filter:drop-shadow(0 0 40px var(--red));}
+  .dxtu-decision.not-out{color:var(--green);filter:drop-shadow(0 0 40px var(--green));}
+  .dxtu-decision.four{color:var(--four);filter:drop-shadow(0 0 40px var(--four));}
+  .dxtu-decision.six{color:var(--six);filter:drop-shadow(0 0 40px var(--six));}
+  .dxtu-decision-sub{font-family:'Orbitron',sans-serif;font-size:16px;letter-spacing:5px;margin-top:10px;display:none;}
+
+  #dx-fx{pointer-events:none;background:rgba(0,0,0,.4);backdrop-filter:blur(12px) brightness(.7);}
+  .dxfx-conf{position:absolute;inset:0;overflow:hidden;}
+  .dx-fx-inner{perspective:1200px;}
+  .dxfx-main{font-family:'Bebas Neue',sans-serif;font-weight:900;font-size:220px;letter-spacing:14px;line-height:1;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;z-index:1;}
+
+  /* ═══ In-ribbon boundary/wicket FX (replaces the ribbon content briefly) ═══ */
+  #rib-fx-inline .rfx-bar{width:100%;height:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#00060e 0%,#030f22 50%,#00060e 100%);border-top:2.5px solid var(--accent);box-shadow:0 -6px 40px rgba(0,0,0,.4);}
+  .rfx-conf{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+  .rfx-content{display:flex;align-items:baseline;gap:14px;z-index:1;}
+  .rfx-num{font-family:'Bebas Neue',sans-serif;font-weight:900;font-size:44px;letter-spacing:2px;transform:scale(0);transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:none;}
+  .rfx-num.show{transform:scale(1);}
+  .rfx-num.four{color:var(--four);text-shadow:0 0 18px var(--four);}
+  .rfx-num.six{color:var(--six);text-shadow:0 0 18px var(--six);}
+  .rfx-text{font-family:'Bebas Neue',sans-serif;font-weight:900;font-size:32px;letter-spacing:4px;display:none;}
+  .rfx-text.out{color:var(--red);text-shadow:0 0 18px var(--red);}
+  .rfx-text.wide{color:var(--gold);text-shadow:0 0 18px var(--gold);}
+  .rfx-text.noball{color:#ff4488;text-shadow:0 0 18px #ff4488;}
+  .rfx-sub{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);}
+  .rfx-conf .confetti-piece{width:7px;height:7px;}
+  #dx-fx.show .dxfx-main{transform:scale(1);}
+  .dxfx-main.four{color:var(--four);} .dxfx-main.six{color:var(--six);} .dxfx-main.out{color:var(--red);}
+  .dxfx-main.wide{color:#ffd700;font-size:150px;} .dxfx-main.noball{color:#ff4488;font-size:135px;}
+  .dxfx-num{font-family:'Anton','Bebas Neue',sans-serif;font-weight:400;font-size:340px;line-height:1;text-align:center;position:relative;z-index:1;transform-style:preserve-3d;display:none;}
+  #dx-fx.show .dxfx-num.spin-in{display:block;animation:numSpinIn .9s cubic-bezier(.2,.85,.35,1.1) both;}
+  .dxfx-num.four{color:var(--four);text-shadow:0 10px 0 #003044,0 14px 18px rgba(0,0,0,.6);}
+  .dxfx-num.six{color:var(--six);text-shadow:0 10px 0 #5a1f00,0 14px 18px rgba(0,0,0,.6);}
+  @keyframes numSpinIn{0%{transform:translateZ(-1800px) scale(.2) rotateY(720deg) rotateX(35deg);opacity:0;filter:blur(14px);}55%{opacity:1;filter:blur(0);}72%{transform:translateZ(40px) scale(1.18) rotateY(-14deg) rotateX(-6deg);}86%{transform:translateZ(0px) scale(.94) rotateY(6deg) rotateX(2deg);}100%{transform:translateZ(0px) scale(1) rotateY(0deg) rotateX(0deg);opacity:1;filter:blur(0);}}
+  .dxfx-sub{font-family:'Orbitron',sans-serif;font-size:26px;letter-spacing:7px;margin-top:14px;text-align:center;position:relative;z-index:1;}
+  .confetti-piece{position:absolute;width:12px;height:12px;border-radius:2px;animation:cfall 1.4s ease-out forwards;}
+  @keyframes cfall{to{transform:translateY(400px) rotate(360deg);opacity:0;}}
+
+  /* ═══ THEME 10 — TOSS / PRE-MATCH PILL ═══ */
+  .rib-toss-wrap{padding:0 22px 14px;}
+  .rib-toss-wrap .rts-pill{display:flex;align-items:center;gap:0;background:#fff;border-radius:14px;height:58px;overflow:visible;box-shadow:0 8px 24px rgba(0,0,0,.35);position:relative;font-family:'Rajdhani',sans-serif;}
+  .rts-logo{width:58px;height:58px;border-radius:50%;background:#0c1628;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.4);z-index:2;margin:0 -14px;}
+  .rts-logo img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .rts-side{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 18px 0 26px;min-width:150px;}
+  .rts-side.right{align-items:flex-end;padding:0 26px 0 18px;text-align:right;}
+  .rts-p{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#8a8f98;}
+  .rts-p.striker{color:#111;font-size:14px;} .rts-p.striker .rts-arrow{color:#e30613;font-size:11px;}
+  .rts-side.right .rts-p{justify-content:flex-end;}
+  .rts-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 10px;}
+  .rts-badge{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#1a2b6b,#3f2f8a);color:#fff;font-weight:800;font-size:15px;letter-spacing:.5px;padding:6px 22px;border-radius:20px;text-transform:uppercase;box-shadow:0 3px 8px rgba(0,0,0,.25);}
+  .rts-badge #rts-rec{background:rgba(255,255,255,.18);padding:1px 8px;border-radius:10px;font-size:13px;}
+  .rts-sub{background:#0c1628;color:#fff;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 16px;border-radius:10px;text-transform:uppercase;white-space:nowrap;}
+  .rts-balls{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;max-width:130px;}
+  .rts-balls .rts-b{width:12px;height:12px;border-radius:50%;background:#111;border:1.5px solid #333;display:flex;align-items:center;justify-content:center;font-size:6px;line-height:1;color:#fff;font-weight:700;overflow:hidden;}
+  .rts-balls .rts-b.rW{background:#e30613;border-color:#e30613;} .rts-balls .rts-b.r4{background:#00bfff;border-color:#00bfff;} .rts-balls .rts-b.r6{background:#ff6600;border-color:#ff6600;}
+
+  /* ═══ THEME 11 — LIVE STAT BAR ═══ */
+  .rib-crickpro-wrap{font-family:'Rajdhani',sans-serif;}
+  .rlb-badges{display:flex;justify-content:flex-end;align-items:flex-start;padding:0 16px 8px;}
+  .rlb-boundary{display:flex;align-items:center;gap:10px;background:rgba(10,20,40,.75);color:#fff;font-weight:700;font-size:10px;padding:6px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.15);letter-spacing:.5px;}
+  .rlb-bd-lbl{color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1.5px;}
+  .rlb-bd-item b{color:#ffd700;font-family:'Orbitron',sans-serif;margin-left:4px;}
+  .rlb-bar{background:linear-gradient(90deg,#0a1730,#0f2040 50%,#0a1730);border-top:3px solid #1d4ed8;}
+  .rib-crickpro-wrap.red-mode .rlb-bar{background:linear-gradient(90deg,#2a0000,#4a0000 50%,#2a0000);border-top-color:#e30613;}
+  .rlb-row1{display:flex;align-items:center;height:44px;padding:0 14px;gap:12px;}
+  .rlb-team{display:flex;align-items:center;gap:8px;min-width:70px;}
+  .rlb-logo,.rlb-logo2{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;overflow:hidden;}
+  .rlb-logo img,.rlb-logo2 img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .rlb-tname{color:#fff;font-weight:800;font-size:11px;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
+  .rlb-score{color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:22px;}
+  .rlb-ov{color:rgba(255,255,255,.55);font-size:8px;text-align:center;letter-spacing:1px;text-transform:uppercase;line-height:1.3;}
+  .rlb-ov b{display:block;color:#fff;font-size:12px;font-family:'Orbitron',sans-serif;}
+  .rlb-bat-block{display:flex;flex-direction:column;color:#fff;font-weight:700;font-size:13px;min-width:90px;}
+  .rlb-bat-block .rlb-bat-sc{color:#ffd700;font-size:11px;font-weight:600;}
+  .rlb-row2{display:flex;align-items:center;justify-content:space-between;height:26px;padding:0 14px;background:rgba(0,0,0,.25);gap:10px;}
+  .rlb-thisover{display:flex;align-items:center;gap:6px;}
+  .rlb-lbl{color:rgba(255,255,255,.5);font-size:8px;letter-spacing:1px;text-transform:uppercase;}
+  .rlb-balls{display:flex;flex-wrap:wrap;gap:3px;max-width:110px;}
+  .rlb-balls .rlb-b{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:6px;color:#fff;font-weight:700;}
+  .rlb-balls .rlb-b.rW{background:#e30613;border-color:#e30613;} .rlb-balls .rlb-b.r4{background:#00bfff;border-color:#00bfff;} .rlb-balls .rlb-b.r6{background:#ff6600;border-color:#ff6600;}
+  .rlb-mid{color:#fff;font-size:10px;font-weight:700;letter-spacing:.5px;} .rlb-mid .rlb-sep{color:rgba(255,255,255,.3);margin:0 6px;}
+  .rlb-bwl{color:#fff;font-size:10px;font-weight:700;} .rlb-bwl span:first-child{color:#ffd700;margin-right:6px;}
+
+  /* ═══ THEME 12 — CHASE / TO WIN ═══ */
+  .rib-chase-wrap .rch-bar{display:flex;align-items:center;height:52px;background:linear-gradient(90deg,#f5c400,#ffdd33 50%,#f5c400);font-family:'Rajdhani',sans-serif;box-shadow:0 -4px 18px rgba(0,0,0,.3);}
+  .rch-team{display:flex;align-items:center;gap:8px;padding:0 12px;min-width:110px;flex-shrink:0;}
+  .rch-logo,.rch-logo2{width:34px;height:34px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;flex-shrink:0;}
+  .rch-logo img,.rch-logo2 img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .rch-tname{font-weight:900;font-size:12px;color:#111;text-transform:uppercase;line-height:1.1;}
+  .rch-vs{font-size:9px;color:#5a4a00;font-weight:700;}
+  .rch-score{display:flex;flex-direction:column;align-items:center;padding:0 14px;border-left:1px solid rgba(0,0,0,.15);}
+  .rch-score span:first-child{font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;color:#111;}
+  .rch-ov{font-size:9px;font-weight:700;color:#5a4a00;}
+  .rch-bats{display:flex;flex-direction:column;gap:2px;padding:0 14px;border-left:1px solid rgba(0,0,0,.15);font-size:12px;font-weight:700;color:#222;min-width:120px;}
+  .rch-bats div{display:flex;align-items:center;gap:5px;} .rch-arrow{color:#e30613;font-size:10px;}
+  .rch-towin{background:#e30613;color:#fff;padding:5px 22px;display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:center;}
+  .rch-towin-lbl{font-size:9px;font-weight:800;letter-spacing:2px;} .rch-towin-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;}
+  @keyframes statFade{0%{opacity:0;transform:translateY(5px);}100%{opacity:1;transform:translateY(0);}}
+  .stat-fade{animation:statFade .45s ease;}
+  .rch-bwl{display:flex;flex-direction:column;gap:2px;padding:0 14px;font-size:11px;font-weight:700;color:#222;text-align:right;}
+  .rch-balls{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end;margin-top:2px;max-width:130px;}
+  .rch-balls .rch-b{width:12px;height:12px;border-radius:50%;background:rgba(0,0,0,.15);border:1px solid rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:6px;color:#111;font-weight:700;}
+  .rch-balls .rch-b.rW{background:#e30613;border-color:#e30613;color:#fff;} .rch-balls .rch-b.r4{background:#0077cc;border-color:#0077cc;color:#fff;} .rch-balls .rch-b.r6{background:#ff6600;border-color:#ff6600;color:#fff;}
+
+  /* ═══ THEME 14 — SIXES / TOURNAMENT TICKER ═══ */
+  .rib-sixes-wrap .rib-sixes-bar{background:#f4f6fa;border-top:2px solid #1a2b6b;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;height:54px;overflow:hidden;box-shadow:0 -4px 16px rgba(0,0,0,.15);}
+  .rsix-side{display:flex;align-items:center;gap:8px;padding:0 14px;min-width:160px;}
+  .rsix-side.right{flex-direction:row-reverse;text-align:right;}
+  .rsix-logo{width:34px;height:34px;border-radius:50%;background:#eef1f6;border:2px solid #1a2b6b;display:flex;align-items:center;justify-content:center;font-size:15px;overflow:hidden;flex-shrink:0;}
+  .rsix-logo img{width:100%;height:100%;object-fit:contain;}
+  .rsix-bats{display:flex;flex-direction:column;gap:1px;}
+  .rsix-bn{font-size:12px;font-weight:700;color:#1a2340;} .rsix-bs{font-family:'Orbitron',sans-serif;font-size:9px;color:#555;}
+  .rsix-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 10px;}
+  .rsix-pill{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#1a2b6b,#7b2f8a);color:#fff;padding:4px 16px;border-radius:16px;font-weight:800;font-size:14px;}
+  .rsix-pill .rsix-ov{background:rgba(255,255,255,.2);padding:1px 8px;border-radius:10px;font-size:10px;}
+  .rsix-sub{font-size:9px;letter-spacing:1.5px;color:#556;font-weight:700;text-transform:uppercase;margin-top:2px;}
+  .rsix-sub b{color:#c2185b;font-family:'Orbitron',sans-serif;margin-left:4px;}
+  .rsix-bwl-nm{font-size:11px;color:#1a2340;font-weight:700;} .rsix-bwl-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:#666;}
+  .rsix-b{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;background:#e4e8ee;color:#8892a6;}
+  .rsix-b.r4{background:#2196f3;color:#fff;} .rsix-b.r6{background:#ff6f00;color:#fff;} .rsix-b.rW{background:#e53935;color:#fff;} .rsix-b.empty{opacity:.4;}
+
+  /* ═══ THEME 15 — COLOR PANEL ═══ */
+  .rib-panel-wrap .rib-panel-bar{background:#0c1122;display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;height:56px;overflow:hidden;box-shadow:0 -4px 18px rgba(0,0,0,.4);}
+  .rpan-side{display:flex;align-items:center;gap:10px;padding:0 16px;min-width:190px;}
+  .rpan-side.bat{background:linear-gradient(90deg,#8a4a12,#c9761f);}
+  .rpan-side.bowl{background:linear-gradient(270deg,#4c7a12,#7fb022);flex-direction:row-reverse;text-align:right;}
+  .rpan-logo{width:32px;height:32px;border-radius:50%;background:#111;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;flex-shrink:0;}
+  .rpan-logo img{width:100%;height:100%;object-fit:contain;}
+  .rpan-bats{display:flex;flex-direction:column;gap:1px;}
+  .rpan-bn{font-size:12px;font-weight:800;color:#fff;} .rpan-bs{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.85);}
+  .rpan-arrow{color:#111;margin-right:4px;font-size:9px;}
+  .rpan-mid{display:flex;align-items:center;justify-content:center;gap:10px;padding:0 10px;}
+  .rpan-pill{display:flex;align-items:center;gap:6px;background:linear-gradient(90deg,#7b1fa2,#c2185b);color:#fff;padding:4px 14px;border-radius:14px;font-weight:800;font-size:13px;}
+  .rpan-scbox{background:#1a7a3a;color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;padding:2px 12px;border-radius:6px;}
+  .rpan-ovbox{background:#e0b400;color:#111;font-weight:800;font-size:10px;padding:4px 10px;border-radius:6px;text-align:center;line-height:1.2;}
+  .rpan-crr{color:#fff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;}
+  .rpan-bwl-nm{font-size:11px;font-weight:800;color:#0c1122;} .rpan-bwl-sc{font-family:'Orbitron',sans-serif;font-size:9px;color:#0c1122;}
+</style>
+</head>
+<body>
+
+<!-- T1 IPL -->
+<div id="rib-ipl" style="display:none;" class="rib-wrap rib-ipl-wrap">
+  <div class="ribbon-main">
+    <div class="rt batting"><div class="rtlogo" id="rb-bat-logo">🏏</div><div><div class="rtname" id="rb-bat-name">TEAM A</div><div class="rtscore batting" id="rb-bat-sc">0/0</div><div style="font-size:8px;color:var(--muted);" id="rb-bat-ov">0.0 ov</div></div></div>
+    <div class="rc-rib"><div class="rc-bats"><div class="rc-bat"><span class="sm">●</span><span class="rc-bn" id="rb-s-n">–</span><span class="rc-bs" id="rb-s-s">0(0)</span></div><div class="rc-bat"><span class="rc-bn" id="rb-ns-n">–</span><span class="rc-bs" id="rb-ns-s">0(0)</span></div></div><div class="rc-bwl"><span class="rc-bwln" id="rb-bwl-n">–</span><span class="rc-bwls" id="rb-bwl-s">0-0-0</span><div class="rc-ob" id="rb-ob"></div></div></div>
+    <div class="rt right bowling"><div class="rtlogo" id="rb-bowl-logo">🏏</div><div style="text-align:right;"><div class="rtname" id="rb-bowl-name">TEAM B</div><div class="rtscore bowling" id="rb-bowl-sc">–</div><div class="rc-ri"><div class="rc-crrl">CRR</div><div class="rc-crrv" id="rb-crr">0.00</div></div></div></div>
+  </div>
+  <div class="rib-tgt" id="rb-tgt-strip" style="display:none;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rb-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rb-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rb-rrr">–</span></div></div>
+</div>
+
+<!-- T2 GOLD -->
+<div id="rib-gold" style="display:none;" class="rib-wrap rib-gold-wrap">
+  <div class="rib-gold-bar">
+    <div class="rg-side"><div class="rg-logo" id="rg-bat-logo">🏏</div><div><div class="rg-name" id="rg-bat-name">TEAM A</div><div class="rg-score" id="rg-bat-sc">0/0</div><div style="font-size:8px;color:rgba(255,215,0,.4);" id="rg-bat-ov">0.0 ov</div></div></div>
+    <div class="rg-mid"><div class="rg-bat-row"><div><div class="rg-name" style="font-size:8px;margin-bottom:1px;">STRIKER</div><div style="display:flex;gap:6px;align-items:center;"><span class="rg-bat-nm" id="rg-s-n">–</span><span class="rg-bat-sc" id="rg-s-s">0(0)</span></div></div><div class="rg-divider"></div><div><div class="rg-name" style="font-size:8px;margin-bottom:1px;">NON-STRIKER</div><div style="display:flex;gap:6px;align-items:center;"><span class="rg-bat-nm" id="rg-ns-n">–</span><span class="rg-bat-sc" id="rg-ns-s">0(0)</span></div></div></div><div class="rg-bwl-row"><span class="rg-bwl-nm" id="rg-bwl-n">–</span><span class="rg-bwl-sc" id="rg-bwl-s">0-0-0</span><div class="rg-ob" id="rg-ob"></div><span class="rg-crr" id="rg-crr">0.00</span></div></div>
+    <div class="rg-side" style="flex-direction:row-reverse;"><div class="rg-logo" id="rg-bowl-logo">🏏</div><div style="text-align:right;"><div class="rg-name" id="rg-bowl-name">TEAM B</div><div class="rg-score bowl" id="rg-bowl-sc">–</div></div></div>
+  </div>
+  <div class="rg-tgt" id="rg-tgt-strip" style="display:none;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rg-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rg-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rg-rrr">–</span></div></div>
+</div>
+
+<!-- T3 NEON -->
+<div id="rib-neon" style="display:none;" class="rib-wrap rib-neon-wrap">
+  <div class="rib-neon-bar">
+    <div class="rn-side"><div class="rn-logo" id="rn-bat-logo">🏏</div><div><div class="rn-name" id="rn-bat-name">TEAM A</div><div class="rn-score" id="rn-bat-sc">0/0</div><div style="font-size:8px;color:rgba(0,200,60,.4);" id="rn-bat-ov">0.0 ov</div></div></div>
+    <div class="rn-mid"><div class="rn-bat-row"><span class="rn-nm" id="rn-s-n">–</span><span class="rn-sc" id="rn-s-s">0(0)</span><span style="color:rgba(0,255,68,.2);font-size:12px;">|</span><span class="rn-nm" id="rn-ns-n">–</span><span class="rn-sc" id="rn-ns-s">0(0)</span></div><div style="display:flex;gap:7px;align-items:center;"><span class="rn-bwl" id="rn-bwl-n">–</span><span style="font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(0,200,60,.4);" id="rn-bwl-s">0-0-0</span><div class="rn-balls" id="rn-balls"></div><span class="rn-crr" id="rn-crr">0.00</span></div></div>
+    <div class="rn-side" style="flex-direction:row-reverse;"><div class="rn-logo" id="rn-bowl-logo">🏏</div><div style="text-align:right;"><div class="rn-name" id="rn-bowl-name">TEAM B</div><div class="rn-score bowl" id="rn-bowl-sc">–</div></div></div>
+  </div>
+  <div class="rn-tgt" id="rn-tgt-strip" style="display:none;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rn-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rn-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rn-rrr">–</span></div></div>
+</div>
+
+<!-- T4 FIRE -->
+<div id="rib-fire" style="display:none;" class="rib-wrap rib-fire-wrap">
+  <div class="rib-fire-bar">
+    <div class="rf-side"><div class="rf-logo" id="rf-bat-logo">🏏</div><div><div class="rf-name" id="rf-bat-name">TEAM A</div><div class="rf-score" id="rf-bat-sc">0/0</div><div style="font-size:8px;color:rgba(255,80,30,.4);" id="rf-bat-ov">0.0 ov</div></div></div>
+    <div class="rf-mid"><div class="rf-bat-row"><span class="rf-nm" id="rf-s-n">–</span><span class="rf-sc" id="rf-s-s">0(0)</span><span style="color:rgba(255,60,0,.2);font-size:14px;">|</span><span class="rf-nm" id="rf-ns-n">–</span><span class="rf-sc" id="rf-ns-s">0(0)</span></div><div style="display:flex;gap:8px;align-items:center;"><span class="rf-bwl" id="rf-bwl-n">–</span><span style="font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,80,30,.4);" id="rf-bwl-s">0-0-0</span><div class="rf-balls" id="rf-balls"></div><span class="rf-crr" id="rf-crr">0.00</span></div></div>
+    <div class="rf-side" style="flex-direction:row-reverse;"><div class="rf-logo" id="rf-bowl-logo">🏏</div><div style="text-align:right;"><div class="rf-name" id="rf-bowl-name">TEAM B</div><div class="rf-score bowl" id="rf-bowl-sc">–</div></div></div>
+  </div>
+  <div class="rf-tgt" id="rf-tgt-strip" style="display:none;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rf-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rf-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rf-rrr">–</span></div></div>
+</div>
+
+<!-- T5 GALAXY -->
+<div id="rib-galaxy" style="display:none;" class="rib-wrap rib-galaxy-wrap">
+  <div class="rib-galaxy-bar">
+    <div class="rpg-side"><div class="rpg-logo" id="rpg-bat-logo">🏏</div><div><div class="rpg-name" id="rpg-bat-name">TEAM A</div><div class="rpg-score" id="rpg-bat-sc">0/0</div><div style="font-size:8px;color:rgba(160,60,255,.4);" id="rpg-bat-ov">0.0 ov</div></div></div>
+    <div class="rpg-mid"><div class="rpg-bat-row"><span class="rpg-nm" id="rpg-s-n">–</span><span class="rpg-sc" id="rpg-s-s">0(0)</span><span style="color:rgba(160,60,255,.2);font-size:14px;">|</span><span class="rpg-nm" id="rpg-ns-n">–</span><span class="rpg-sc" id="rpg-ns-s">0(0)</span></div><div style="display:flex;gap:8px;align-items:center;"><span class="rpg-bwl" id="rpg-bwl-n">–</span><span style="font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(160,60,255,.4);" id="rpg-bwl-s">0-0-0</span><div class="rpg-balls" id="rpg-balls"></div><span class="rpg-crr" id="rpg-crr">0.00</span></div></div>
+    <div class="rpg-side" style="flex-direction:row-reverse;"><div class="rpg-logo" id="rpg-bowl-logo">🏏</div><div style="text-align:right;"><div class="rpg-name" id="rpg-bowl-name">TEAM B</div><div class="rpg-score bowl" id="rpg-bowl-sc">–</div></div></div>
+  </div>
+  <div class="rpg-tgt" id="rpg-tgt-strip" style="display:none;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rpg-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rpg-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rpg-rrr">–</span></div></div>
+</div>
+
+<!-- T6 CLEAN -->
+<div id="rib-clean" style="display:none;" class="rib-wrap rib-clean-wrap">
+  <div class="rib-clean-bar">
+    <div class="rcl-side"><div class="rcl-logo" id="rcl-bat-logo">🏏</div><div><div class="rcl-name" id="rcl-bat-name">TEAM A</div><div class="rcl-score" id="rcl-bat-sc">0/0</div><div style="font-size:8px;color:#999;" id="rcl-bat-ov">0.0 ov</div></div></div>
+    <div class="rcl-mid"><div class="rcl-bat-row"><span class="rcl-nm" id="rcl-s-n">–</span><span class="rcl-sc" id="rcl-s-s">0(0)</span><span style="color:#ddd;font-size:14px;">|</span><span class="rcl-nm" id="rcl-ns-n">–</span><span class="rcl-sc" id="rcl-ns-s">0(0)</span></div><div style="display:flex;gap:8px;align-items:center;"><span class="rcl-bwl" id="rcl-bwl-n">–</span><span style="font-family:'Orbitron',sans-serif;font-size:8px;color:#999;" id="rcl-bwl-s">0-0-0</span><div class="rcl-balls" id="rcl-balls"></div><span class="rcl-crr" id="rcl-crr">0.00</span></div></div>
+    <div class="rcl-side" style="flex-direction:row-reverse;"><div class="rcl-logo" id="rcl-bowl-logo">🏏</div><div style="text-align:right;"><div class="rcl-name" id="rcl-bowl-name">TEAM B</div><div class="rcl-score bowl" id="rcl-bowl-sc">–</div></div></div>
+  </div>
+  <div class="rcl-tgt" id="rcl-tgt-strip" style="display:none;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rcl-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rcl-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rcl-rrr">–</span></div></div>
+</div>
+
+<!-- T7 TICKER -->
+<div id="rib-ticker" style="display:none;" class="rib-wrap rib-ticker-wrap">
+  <div class="ribbon-ticker"><div class="tk-nm" id="tk-nm" style="color:var(--accent);">TEAM A</div><div class="tk-sc" id="tk-sc" style="color:#fff;">0/0</div><span style="font-size:8px;color:var(--muted);" id="tk-ov">(0.0)</span><div class="tk-sep">|</div><div class="tk-bat" id="tk-bat">–</div><div class="tk-sep">|</div><div class="tk-balls" id="tk-balls"></div><div class="tk-crr" id="tk-crr">CRR: 0.00</div></div>
+</div>
+
+<!-- T8 GLASS -->
+<div id="rib-glass" style="display:none;" class="rib-wrap rib-glass-wrap">
+  <div class="rib-glass-bar">
+    <div class="rgl-side"><div class="rgl-logo" id="rgl-bat-logo">🏏</div><div><div class="rgl-name" id="rgl-bat-name">TEAM A</div><div class="rgl-score" id="rgl-bat-sc">0/0</div><div style="font-size:8px;color:rgba(255,255,255,.2);" id="rgl-bat-ov">0.0 ov</div></div></div>
+    <div class="rgl-mid"><div class="rgl-bat-row"><span class="rgl-nm" id="rgl-s-n">–</span><span class="rgl-sc" id="rgl-s-s">0(0)</span><span style="color:rgba(255,255,255,.1);font-size:14px;">|</span><span class="rgl-nm" id="rgl-ns-n">–</span><span class="rgl-sc" id="rgl-ns-s">0(0)</span></div><div style="display:flex;gap:8px;align-items:center;"><span class="rgl-bwl" id="rgl-bwl-n">–</span><span style="font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(255,255,255,.2);" id="rgl-bwl-s">0-0-0</span><div class="rgl-balls" id="rgl-balls"></div><span class="rgl-crr" id="rgl-crr">0.00</span></div></div>
+    <div class="rgl-side" style="flex-direction:row-reverse;"><div class="rgl-logo" id="rgl-bowl-logo">🏏</div><div style="text-align:right;"><div class="rgl-name" id="rgl-bowl-name">TEAM B</div><div class="rgl-score bowl" id="rgl-bowl-sc">–</div></div></div>
+  </div>
+  <div class="rgl-tgt" id="rgl-tgt-strip" style="display:none;background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.08);padding:3px 12px;justify-content:center;gap:16px;font-size:9px;"><div class="rtgt-i"><span class="rtgt-l">Target</span><span class="rtgt-v" id="rgl-tgt">–</span></div><div class="rtgt-i"><span class="rtgt-l">Need</span><span class="rtgt-v" id="rgl-need">–</span></div><div class="rtgt-i"><span class="rtgt-l">RRR</span><span class="rtgt-v" id="rgl-rrr">–</span></div></div>
+</div>
+
+<!-- T9 LOCAL -->
+<div id="rib-local" style="display:none;" class="rib-wrap rib-local-wrap">
+  <div class="rib-local-bar">
+    <div class="rloc-team-block"><div class="rloc-team-name" id="rloc-bat-name">BATTING TEAM</div></div>
+    <div class="rloc-left"><div class="rloc-batsmen"><div class="rloc-bat"><span class="rloc-bat-name" id="rloc-ns-n">–</span><span class="rloc-bat-score" id="rloc-ns-s">0(0)</span></div></div></div>
+    <div class="rloc-striker-block"><span class="rloc-striker-arr">▶</span><div class="rloc-striker-info"><div class="rloc-striker-sc" id="rloc-s-s">0(0)</div><div class="rloc-striker-name" id="rloc-s-n">–</div></div></div>
+    <div class="rloc-center"><div class="rloc-center-top"><span class="rloc-team-abbr" id="rloc-bat-abbr">BAT</span><span class="rloc-main-score" id="rloc-bat-sc">0/0</span></div><div class="rloc-meta"><span class="rloc-ov" id="rloc-bat-ov">0.0 ov</span><span class="rloc-rr">RUN RATE: <span id="rloc-crr">0.00</span></span></div><div class="rloc-balls" id="rloc-balls"></div></div>
+    <div class="rloc-right"><div class="rloc-bwl-name-top" id="rloc-bwl-n">–</div><div class="rloc-bwl-stat"><span id="rloc-bwl-s">0-0-0</span> &nbsp;|&nbsp; <span id="rloc-bowl-sc">–</span></div></div>
+    <div class="rloc-bowl-team-block"><div class="rloc-bowl-team" id="rloc-bowl-name">BOWL TEAM</div></div>
+  </div>
+  <div class="rloc-tgt-strip" id="rloc-tgt-strip" style="display:none;">
+    <div class="rloc-tgt-item"><span class="rloc-tgt-l">Target</span><span class="rloc-tgt-v" id="rloc-tgt">–</span></div>
+    <div class="rloc-tgt-item"><span class="rloc-tgt-l">Need</span><span class="rloc-tgt-v" id="rloc-need">–</span></div>
+    <div class="rloc-tgt-item"><span class="rloc-tgt-l">RRR</span><span class="rloc-tgt-v" id="rloc-rrr">–</span></div>
+  </div>
+</div>
+
+<!-- T10 TOSS / PRE-MATCH PILL -->
+<div id="rib-toss" style="display:none;" class="rib-wrap rib-toss-wrap">
+  <div class="rts-pill">
+    <div class="rts-logo" id="rts-bat-logo">🏏</div>
+    <div class="rts-side">
+      <div class="rts-p"><span id="rts-ns-n">–</span>&nbsp;<span id="rts-ns-s">0(0)</span></div>
+      <div class="rts-p striker"><span class="rts-arrow">▶</span><span id="rts-s-n">–</span>&nbsp;<span id="rts-s-s">0(0)</span></div>
+    </div>
+    <div class="rts-center">
+      <div class="rts-badge"><span id="rts-team">TEAM</span><span id="rts-rec">0-0</span></div>
+      <div class="rts-sub" id="rts-sub">LIVE FROM THE MIDDLE</div>
+    </div>
+    <div class="rts-side right">
+      <div class="rts-p"><span id="rts-bwl-n">–</span>&nbsp;<span id="rts-bwl-s">0-0</span></div>
+      <div class="rts-balls" id="rts-balls"></div>
+    </div>
+    <div class="rts-logo" id="rts-bowl-logo">🏏</div>
+  </div>
+</div>
+
+<!-- T11 LIVE STAT BAR -->
+<div id="rib-crickpro" style="display:none;" class="rib-wrap rib-crickpro-wrap">
+  <div class="rlb-badges">
+    <div class="rlb-boundary"><span class="rlb-bd-lbl">MATCH BOUNDARIES</span><span class="rlb-bd-item">FOURS<b id="rlb-fours">0</b></span><span class="rlb-bd-item">SIXES<b id="rlb-sixes">0</b></span></div>
+  </div>
+  <div class="rlb-bar">
+    <div class="rlb-row1">
+      <div class="rlb-team"><div class="rlb-logo" id="rlb-bat-logo">🏏</div><div class="rlb-tname" id="rlb-tabbr">TEAM</div></div>
+      <div class="rlb-score" id="rlb-sc">0-0</div>
+      <div class="rlb-ov">OVERS<b id="rlb-ov">0.0(20)</b></div>
+      <div class="rlb-bat-block"><span id="rlb-s-n">–</span><span class="rlb-bat-sc" id="rlb-s-s">0(0)</span></div>
+      <div class="rlb-bat-block"><span id="rlb-ns-n">–</span><span class="rlb-bat-sc" id="rlb-ns-s">0(0)</span></div>
+      <div class="rlb-logo2" id="rlb-bowl-logo">🏏</div>
+    </div>
+    <div class="rlb-row2">
+      <div class="rlb-thisover"><span class="rlb-lbl">This Over</span><div class="rlb-balls" id="rlb-balls"></div></div>
+      <div class="rlb-mid"><span id="rlb-crr">CRR 0.00</span><span class="rlb-sep">|</span><span id="rlb-proj">PROJECTED 0</span></div>
+      <div class="rlb-bwl"><span id="rlb-bwl-n">–</span><span id="rlb-bwl-s">0-0(0.0)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- T12 CHASE / TO WIN -->
+<div id="rib-chase" style="display:none;" class="rib-wrap rib-chase-wrap">
+  <div class="rch-bar">
+    <div class="rch-team"><div class="rch-logo" id="rch-bat-logo">🏏</div><div><div class="rch-tname" id="rch-tname">TEAM</div><div class="rch-vs" id="rch-vs">V TEAM</div></div></div>
+    <div class="rch-score"><span id="rch-sc">0-0</span><span class="rch-ov" id="rch-ov">0.0</span></div>
+    <div class="rch-bats">
+      <div><span id="rch-ns-n">–</span><span id="rch-ns-s">0 0</span></div>
+      <div><span class="rch-arrow">▶</span><span id="rch-s-n">–</span><span id="rch-s-s">0 0</span></div>
+    </div>
+    <div class="rch-towin"><div class="rch-towin-lbl" id="rch-towin-lbl">TO WIN</div><div class="rch-towin-val" id="rch-towin">– OFF –</div></div>
+    <div class="rch-bwl"><span id="rch-bwl-n">–</span><span id="rch-bwl-s">0-0/0.0</span><div class="rch-balls" id="rch-balls"></div></div>
+    <div class="rch-logo2" id="rch-bowl-logo">🏏</div>
+  </div>
+</div>
+
+<!-- T14 SIXES / TOURNAMENT TICKER -->
+<div id="rib-sixes" style="display:none;" class="rib-wrap rib-sixes-wrap">
+  <div class="rib-sixes-bar">
+    <div class="rsix-side"><div class="rsix-logo" id="rsix-bat-logo">🏏</div><div class="rsix-bats">
+      <div><span class="rsix-bn" id="rsix-ns-n">–</span> <span class="rsix-bs" id="rsix-ns-s">0(0)</span></div>
+      <div><span class="rsix-bn" id="rsix-s-n">–</span> <span class="rsix-bs" id="rsix-s-s">0(0)</span></div>
+    </div></div>
+    <div class="rsix-mid">
+      <div class="rsix-pill"><span id="rsix-team">TEAM v TEAM</span><span id="rsix-sc">0/0</span><span class="rsix-ov"><span id="rsix-ov">Ove: 0.0</span></span></div>
+      <div class="rsix-sub">MATCH FOURS <b id="rsix-fours">0</b> &nbsp; MATCH SIXES <b id="rsix-sixes">0</b></div>
+      <div class="rsix-sub" id="rsix-rot" style="color:#7b2f8a;">CRR: 0.00</div>
+    </div>
+    <div class="rsix-side right"><div class="rsix-logo" id="rsix-bowl-logo">🏏</div><div>
+      <div class="rsix-bwl-row"><span class="rsix-bwl-nm" id="rsix-bwl-n">–</span> <span class="rsix-bwl-sc" id="rsix-bwl-s">0-0</span></div>
+      <div class="rsix-balls" id="rsix-balls" style="display:flex;gap:3px;margin-top:2px;justify-content:flex-end;"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- T15 COLOR PANEL -->
+<div id="rib-panel" style="display:none;" class="rib-wrap rib-panel-wrap">
+  <div class="rib-panel-bar">
+    <div class="rpan-side bat"><div class="rpan-logo" id="rpan-bat-logo">🏏</div><div class="rpan-bats">
+      <div class="rpan-bn"><span id="rpan-s-n">–</span></div><div class="rpan-bs" id="rpan-s-s">0(0)</div>
+      <div class="rpan-bn"><span class="rpan-arrow">▶</span><span id="rpan-ns-n">–</span></div><div class="rpan-bs" id="rpan-ns-s">0(0)</div>
+    </div></div>
+    <div class="rpan-mid">
+      <div class="rpan-pill"><span id="rpan-team">TEAM</span></div>
+      <div class="rpan-scbox" id="rpan-sc">0/0</div>
+      <div class="rpan-ovbox">OVERS-<br><span id="rpan-ov">0.0</span></div>
+      <div class="rpan-crr"><span id="rpan-rot-lbl">CRR</span>: <span id="rpan-rot-val">0.00</span></div>
+    </div>
+    <div class="rpan-side bowl"><div class="rpan-logo" id="rpan-bowl-logo">🏏</div><div>
+      <div class="rpan-bn" id="rpan-bwl-n">–</div><div class="rpan-bs" id="rpan-bwl-s">0-0 0.0</div>
+    </div></div>
+  </div>
+</div>
+
+<!-- Full-screen animation overlays -->
+<div class="dx-overlay" id="dx-break">
+  <div class="dxbrk-content">
+    <div class="dxbrk-icon" id="dxbrk-icon">⏸</div>
+    <div class="dxbrk-title" id="dxbrk-title">BREAK</div>
+    <div class="dxbrk-sub" id="dxbrk-sub">PLAY SUSPENDED</div>
+    <div class="dxbrk-info">
+      <div class="dxbrk-item"><div class="dxbrk-lbl">Score</div><div class="dxbrk-val" id="dxbrk-sc">0/0</div></div>
+      <div class="dxbrk-item"><div class="dxbrk-lbl">Overs</div><div class="dxbrk-val" id="dxbrk-ov">0.0</div></div>
+      <div class="dxbrk-item"><div class="dxbrk-lbl">CRR</div><div class="dxbrk-val" id="dxbrk-crr">0.00</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="dx-overlay" id="dx-tu">
+  <div class="dxtu-wrap">
+    <div class="dxtu-eye">👁️</div>
+    <div class="dxtu-title">3RD UMPIRE</div>
+    <div class="dxtu-sub">DECISION UNDER REVIEW</div>
+    <div id="dxtu-pending"><div class="dxtu-pending-box"><div class="dxtu-spinner"></div><div class="dxtu-pending-text">REVIEWING...</div></div></div>
+    <div id="dxtu-decided" style="display:none;"><div class="dxtu-decision" id="dxtu-dec"></div><div class="dxtu-decision-sub" id="dxtu-dec-sub"></div></div>
+  </div>
+</div>
+
+<div id="rib-fx-inline" class="rib-wrap" style="display:none;">
+  <div class="rfx-bar">
+    <div class="rfx-conf" id="rfx-conf"></div>
+    <div class="rfx-content">
+      <span class="rfx-num" id="rfx-num"></span>
+      <span class="rfx-text" id="rfx-txt"></span>
+      <span class="rfx-sub" id="rfx-sub"></span>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBnJK9-ySZIC_AJvKWR0qym7Kh36z6VUSo",
+  authDomain: "cricket-scorer-pro-37f01.firebaseapp.com",
+  projectId: "cricket-scorer-pro-37f01",
+  storageBucket: "cricket-scorer-pro-37f01.firebasestorage.app",
+  messagingSenderId: "103065036677",
+  appId: "1:103065036677:web:85ee364f8c8e20a1e5c6ec"
+};
+let db = null;
+let unsubscribe = null;
+const RIB_THEMES = ['ipl','gold','neon','fire','galaxy','clean','ticker','glass','local','toss','crickpro','chase','sixes','panel'];
+
+function ballHTML(b, cls){
+  if(b === undefined) return {c:cls+' empty', t:''};
+  if(b === 'W') return {c:cls+' rW', t:'W'};
+  if(b === '4') return {c:cls+' r4', t:'4'};
+  if(b === '6') return {c:cls+' r6', t:'6'};
+  return {c:cls, t:b};
+}
+function fillBalls(containerId, balls, cls){
+  const c = document.getElementById(containerId);
+  if(!c) return;
+  c.innerHTML = '';
+  const slotCount = Math.min(Math.max(balls.length, 6), 12); // at least 6 slots, extends for extra balls (wide/no-ball), capped at 12
+  for(let k=0; k<slotCount; k++){
+    const dv = document.createElement('div');
+    const r = ballHTML(balls[k], cls);
+    dv.className = r.c; dv.textContent = r.t;
+    c.appendChild(dv);
+  }
+}
+function getCRR(i){
+  const overs = (i.overs||0) + (i.gb||0)/6;
+  if(overs <= 0) return '0.00';
+  return (i.runs/overs).toFixed(2);
+}
+
+function buildD(data){
+  const ci = data.ci;
+  const i = data.innings[ci];
+  if(!i) return null;
+  const battingIdx = (i.bt !== undefined && i.bt !== null) ? i.bt : (data.bt !== undefined ? data.bt : ci);
+  const bowlingIdx = battingIdx === 0 ? 1 : 0;
+  const bt = data.teams[battingIdx] || {name:'Team A'};
+  const blt = data.teams[bowlingIdx] || {name:'Team B'};
+  const s = (i.str !== null && i.str !== undefined && i.bat) ? i.bat[i.str] : null;
+  const ns = (i.ns !== null && i.ns !== undefined && i.bat) ? i.bat[i.ns] : null;
+  const bw = (i.bi !== null && i.bi !== undefined && i.bwl) ? i.bwl[i.bi] : null;
+  return {data, ci, i, bt, blt, s, ns, bw, crr: getCRR(i), ov: i.overs||0, bl: i.gb||0};
+}
+
+function fillTargetGeneric(prefix, d){
+  const strip = document.getElementById(prefix+'tgt-strip');
+  if(!strip) return;
+  const T = id => document.getElementById(prefix+id);
+  if(d.ci === 1 && d.data.innings[0]){
+    const i1 = d.data.innings[0], tgt = i1.runs+1, need = tgt-d.i.runs, rem = (d.data.maxOvers*6)-(d.ov*6+d.bl);
+    strip.style.display = (prefix==='rloc-') ? 'flex' : 'flex';
+    if(T('tgt')) T('tgt').textContent = tgt;
+    if(T('need')) T('need').textContent = Math.max(need,0)+'('+Math.max(rem,0)+'b)';
+    if(T('rrr')) T('rrr').textContent = rem>0 ? ((Math.max(need,0)/rem)*6).toFixed(2) : '0.00';
+  } else { strip.style.display = 'none'; }
+}
+
+// Generic renderer for themes with consistent id suffixes: gold(rg-), neon(rn-), fire(rf-), galaxy(rpg-), clean(rcl-), glass(rgl-)
+function rendTheme(p, d, ballCls){
+  const T = id => document.getElementById(p+id);
+  const setT = (id,v) => { const e=T(id); if(e) e.textContent=v; };
+  const setH = (id,v) => { const e=T(id); if(e) e.innerHTML=v; };
+  setH('bat-logo', d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏'));
+  setH('bowl-logo', d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏'));
+  setT('bat-name', d.bt.name); setT('bat-sc', d.i.runs+'/'+d.i.wkts); setT('bat-ov', d.ov+'.'+d.bl+' ov');
+  setT('bowl-name', d.blt.name); setT('crr', d.crr);
+  setT('s-n', d.s?d.s.name+'*':'–'); setT('s-s', d.s?d.s.r+'('+d.s.b+')':'');
+  setT('ns-n', d.ns?d.ns.name:'–'); setT('ns-s', d.ns?d.ns.r+'('+d.ns.b+')':'');
+  setT('bwl-n', d.bw?d.bw.name:'–'); setT('bwl-s', d.bw?d.bw.o+'-'+d.bw.w+'-'+d.bw.r:'');
+  if(d.ci === 1 && d.data.innings[0]){ setT('bowl-sc', d.data.innings[0].runs+'/'+d.data.innings[0].wkts); } else { setT('bowl-sc','–'); }
+  fillBalls(p+'balls', d.i.co||[], ballCls);
+  fillTargetGeneric(p, d);
+}
+
+function rendIPL(d){
+  const T = id => document.getElementById('rb-'+id);
+  T('bat-logo').innerHTML = d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏');
+  T('bowl-logo').innerHTML = d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏');
+  T('bat-name').textContent = d.bt.name; T('bat-sc').textContent = d.i.runs+'/'+d.i.wkts; T('bat-ov').textContent = d.ov+'.'+d.bl+' ov';
+  T('bowl-name').textContent = d.blt.name; T('crr').textContent = d.crr;
+  T('s-n').textContent = d.s?d.s.name+'*':'–'; T('s-s').textContent = d.s?d.s.r+'('+d.s.b+')':'';
+  T('ns-n').textContent = d.ns?d.ns.name:'–'; T('ns-s').textContent = d.ns?d.ns.r+'('+d.ns.b+')':'';
+  T('bwl-n').textContent = d.bw?d.bw.name:'–'; T('bwl-s').textContent = d.bw?d.bw.o+'-'+d.bw.w+'-'+d.bw.r:'';
+  if(d.ci===1 && d.data.innings[0]){ T('bowl-sc').textContent = d.data.innings[0].runs+'/'+d.data.innings[0].wkts; } else { T('bowl-sc').textContent='–'; }
+  fillBalls('rb-ob', d.i.co||[], 'rb');
+  fillTargetGeneric('rb-', d);
+}
+
+function rendLocal(d){
+  const T = id => document.getElementById('rloc-'+id);
+  T('bat-name').textContent = d.bt.name;
+  T('bat-abbr').textContent = d.bt.name ? d.bt.name.substring(0,3).toUpperCase() : 'BAT';
+  T('bat-sc').textContent = d.i.runs+'/'+d.i.wkts;
+  T('bat-ov').textContent = d.ov+'.'+d.bl+' ov';
+  T('crr').textContent = d.crr;
+  T('s-n').textContent = d.s?d.s.name.toUpperCase():'–'; T('s-s').textContent = d.s?d.s.r+'('+d.s.b+')':'';
+  T('ns-n').textContent = d.ns?d.ns.name:'–'; T('ns-s').textContent = d.ns?d.ns.r+'('+d.ns.b+')':'';
+  T('bwl-n').textContent = d.bw?d.bw.name.toUpperCase():'–';
+  T('bwl-s').textContent = d.bw?(d.bw.o+'.'+(d.bw.b||0)+' '+d.bw.w+'W '+d.bw.r+'R'):'0-0-0';
+  T('bowl-name').textContent = d.blt.name;
+  if(d.ci===1 && d.data.innings[0]){ T('bowl-sc').textContent = d.data.innings[0].runs+'/'+d.data.innings[0].wkts; } else { T('bowl-sc').textContent='–'; }
+  fillBalls('rloc-balls', d.i.co||[], 'rloc-b');
+  fillTargetGeneric('rloc-', d);
+}
+
+function rendTicker(d){
+  const T = id => document.getElementById(id);
+  T('tk-nm').textContent = d.bt.name;
+  T('tk-sc').textContent = d.i.runs+'/'+d.i.wkts;
+  T('tk-ov').textContent = '('+d.ov+'.'+d.bl+')';
+  T('tk-bat').textContent = (d.s?d.s.name+' '+d.s.r+'('+d.s.b+')':'–') + (d.bw?(' | '+d.bw.name+' '+d.bw.o+'-'+d.bw.w+'-'+d.bw.r):'');
+  fillBalls('tk-balls', d.i.co||[], 'tb');
+  T('tk-crr').textContent = 'CRR: '+d.crr;
+}
+
+let _rotList = [];
+let _rotIdx = 0;
+let _rotTimer = null;
+let _lastAnimatedIdx = -1;
+
+function computeRotatingStats(d){
+  const list = [];
+  list.push({l:'CRR', v: d.crr});
+  const pR = (d.s?d.s.r:0)+(d.ns?d.ns.r:0);
+  const pB = (d.s?d.s.b:0)+(d.ns?d.ns.b:0);
+  list.push({l:'PARTNERSHIP', v: pR+'('+pB+')'});
+  const ballsBowled = d.ov*6+d.bl;
+  const proj = ballsBowled>0 ? Math.round((d.i.runs/ballsBowled)*(d.data.maxOvers||20)*6) : 0;
+  list.push({l:'PROJECTED', v: proj});
+  if(d.ci===1 && d.data.innings[0]){
+    const i1=d.data.innings[0], tgt=i1.runs+1, need=tgt-d.i.runs, rem=(d.data.maxOvers*6)-(d.ov*6+d.bl);
+    list.push({l:'TARGET', v: tgt});
+    list.push({l:'TO WIN', v: Math.max(need,0)+' OFF '+Math.max(rem,0)});
+    list.push({l:'RRR', v: rem>0 ? ((Math.max(need,0)/rem)*6).toFixed(2) : '0.00'});
+  }
+  return list;
+}
+
+function applyRotDisplay(animate){
+  const item = _rotList[_rotIdx] || {l:'',v:''};
+  const reallyAnimate = animate && (_rotIdx !== _lastAnimatedIdx);
+  if(animate) _lastAnimatedIdx = _rotIdx;
+  const tsSub = document.getElementById('rts-sub');
+  if(tsSub){
+    tsSub.textContent = item.l + (item.v!==undefined ? (': '+item.v) : '');
+    if(reallyAnimate){ tsSub.classList.remove('stat-fade'); void tsSub.offsetWidth; tsSub.classList.add('stat-fade'); setTimeout(()=>tsSub.classList.remove('stat-fade'), 500); }
+  }
+  const chLbl = document.getElementById('rch-towin-lbl');
+  const chVal = document.getElementById('rch-towin');
+  if(chLbl && chVal){
+    chLbl.textContent = item.l; chVal.textContent = item.v;
+    if(reallyAnimate){ chVal.classList.remove('stat-fade'); void chVal.offsetWidth; chVal.classList.add('stat-fade'); setTimeout(()=>chVal.classList.remove('stat-fade'), 500); }
+  }
+  const sixRot = document.getElementById('rsix-rot');
+  if(sixRot){
+    sixRot.textContent = item.l + (item.v!==undefined ? (': '+item.v) : '');
+    if(reallyAnimate){ sixRot.classList.remove('stat-fade'); void sixRot.offsetWidth; sixRot.classList.add('stat-fade'); setTimeout(()=>sixRot.classList.remove('stat-fade'), 500); }
+  }
+  const panLbl = document.getElementById('rpan-rot-lbl');
+  const panVal = document.getElementById('rpan-rot-val');
+  if(panLbl && panVal){
+    panLbl.textContent = item.l; panVal.textContent = item.v;
+    if(reallyAnimate){ panVal.classList.remove('stat-fade'); void panVal.offsetWidth; panVal.classList.add('stat-fade'); setTimeout(()=>panVal.classList.remove('stat-fade'), 500); }
+  }
+}
+
+function refreshRotatingStats(d){
+  _rotList = computeRotatingStats(d);
+  if(_rotIdx >= _rotList.length) _rotIdx = 0;
+  applyRotDisplay(false);
+  if(!_rotTimer){
+    _rotTimer = setInterval(()=>{
+      if(!_rotList.length) return;
+      _rotIdx = (_rotIdx+1) % _rotList.length;
+      applyRotDisplay(true);
+    }, 9000);
+  }
+}
+
+function rendToss(d){
+  const T = id => document.getElementById(id);
+  const setH = (id,v) => { const e=T(id); if(e) e.innerHTML=v; };
+  setH('rts-bat-logo', d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏'));
+  setH('rts-bowl-logo', d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏'));
+  T('rts-ns-n').textContent = d.ns?d.ns.name:'–'; T('rts-ns-s').textContent = d.ns?d.ns.r+'('+d.ns.b+')':'0(0)';
+  T('rts-s-n').textContent = d.s?d.s.name:'–'; T('rts-s-s').textContent = d.s?d.s.r+'('+d.s.b+')':'0(0)';
+  T('rts-team').textContent = d.bt.name; T('rts-rec').textContent = d.i.runs+'-'+d.i.wkts;
+  refreshRotatingStats(d);
+  T('rts-bwl-n').textContent = d.bw?d.bw.name:'–'; T('rts-bwl-s').textContent = d.bw?d.bw.w+'-'+d.bw.r:'0-0';
+  fillBalls('rts-balls', d.i.co||[], 'rts-b');
+}
+
+function rendLivebar(d){
+  const T = id => document.getElementById(id);
+  const setH = (id,v) => { const e=T(id); if(e) e.innerHTML=v; };
+  setH('rlb-bat-logo', d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏'));
+  setH('rlb-bowl-logo', d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏'));
+  T('rlb-tabbr').textContent = d.bt.name;
+  T('rlb-sc').textContent = d.i.runs+'-'+d.i.wkts;
+  T('rlb-ov').textContent = d.ov+'.'+d.bl+'('+(d.data.maxOvers||20)+')';
+  T('rlb-s-n').textContent = d.s?d.s.name:'–'; T('rlb-s-s').textContent = d.s?d.s.r+'('+d.s.b+')':'0(0)';
+  T('rlb-ns-n').textContent = d.ns?d.ns.name:'–'; T('rlb-ns-s').textContent = d.ns?d.ns.r+'('+d.ns.b+')':'0(0)';
+  T('rlb-crr').textContent = 'CRR '+d.crr;
+  const ballsBowled = d.ov*6+d.bl;
+  const proj = ballsBowled>0 ? Math.round((d.i.runs/ballsBowled)*(d.data.maxOvers||20)*6) : 0;
+  T('rlb-proj').textContent = 'PROJECTED '+proj;
+  T('rlb-bwl-n').textContent = d.bw?d.bw.name:'–';
+  T('rlb-bwl-s').textContent = d.bw ? (d.bw.r+'-'+d.bw.w+'('+d.bw.o+'.'+(d.bw.b||0)+')') : '0-0(0.0)';
+  let totF=0, totS=0;
+  (d.i.bat||[]).forEach(pl=>{ totF+=pl.f||0; totS+=pl.s||0; });
+  T('rlb-fours').textContent = totF; T('rlb-sixes').textContent = totS;
+  fillBalls('rlb-balls', d.i.co||[], 'rlb-b');
+  const wrapEl = document.getElementById('rib-crickpro');
+  if(wrapEl) wrapEl.classList.toggle('red-mode', d.ci===1);
+}
+
+function rendChase(d){
+  const T = id => document.getElementById(id);
+  const setH = (id,v) => { const e=T(id); if(e) e.innerHTML=v; };
+  setH('rch-bat-logo', d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏'));
+  setH('rch-bowl-logo', d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏'));
+  T('rch-tname').textContent = d.bt.name; T('rch-vs').textContent = 'V '+d.blt.name;
+  T('rch-sc').textContent = d.i.runs+'-'+d.i.wkts; T('rch-ov').textContent = d.ov+'.'+d.bl;
+  T('rch-ns-n').textContent = d.ns?d.ns.name:'–'; T('rch-ns-s').textContent = d.ns?d.ns.r+' '+d.ns.b:'0 0';
+  T('rch-s-n').textContent = d.s?d.s.name:'–'; T('rch-s-s').textContent = d.s?d.s.r+' '+d.s.b:'0 0';
+  refreshRotatingStats(d);
+  T('rch-bwl-n').textContent = d.bw?d.bw.name:'–';
+  T('rch-bwl-s').textContent = d.bw ? (d.bw.r+'-'+d.bw.w+'/'+d.bw.o+'.'+(d.bw.b||0)) : '0-0/0.0';
+  fillBalls('rch-balls', d.i.co||[], 'rch-b');
+}
+
+function rendSixes(d){
+  const T = id => document.getElementById(id);
+  const setH = (id,v) => { const e=T(id); if(e) e.innerHTML=v; };
+  setH('rsix-bat-logo', d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏'));
+  setH('rsix-bowl-logo', d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏'));
+  T('rsix-ns-n').textContent = d.ns?d.ns.name:'–'; T('rsix-ns-s').textContent = d.ns?d.ns.r+'('+d.ns.b+')':'0(0)';
+  T('rsix-s-n').textContent = d.s?d.s.name:'–'; T('rsix-s-s').textContent = d.s?d.s.r+'('+d.s.b+')':'0(0)';
+  T('rsix-team').textContent = d.bt.name;
+  T('rsix-sc').textContent = d.i.runs+'/'+d.i.wkts;
+  T('rsix-ov').textContent = 'Ove: '+d.ov+'.'+d.bl;
+  let totF=0, totS=0; (d.i.bat||[]).forEach(pl=>{ totF+=pl.f||0; totS+=pl.s||0; });
+  T('rsix-fours').textContent = totF;
+  T('rsix-sixes').textContent = totS;
+  T('rsix-bwl-n').textContent = d.bw?d.bw.name:'–';
+  T('rsix-bwl-s').textContent = d.bw?(d.bw.r+'-'+d.bw.w+' '+d.bw.o+'.'+(d.bw.b||0)):'0-0 0.0';
+  fillBalls('rsix-balls', d.i.co||[], 'rsix-b');
+  refreshRotatingStats(d);
+}
+
+function rendPanel(d){
+  const T = id => document.getElementById(id);
+  const setH = (id,v) => { const e=T(id); if(e) e.innerHTML=v; };
+  setH('rpan-bat-logo', d.bt.logo?('<img src="'+d.bt.logo+'">'):(d.bt.emoji||'🏏'));
+  setH('rpan-bowl-logo', d.blt.logo?('<img src="'+d.blt.logo+'">'):(d.blt.emoji||'🏏'));
+  T('rpan-s-n').textContent = d.s?d.s.name:'–'; T('rpan-s-s').textContent = d.s?d.s.r+'('+d.s.b+')':'0(0)';
+  T('rpan-ns-n').textContent = d.ns?d.ns.name:'–'; T('rpan-ns-s').textContent = d.ns?d.ns.r+'('+d.ns.b+')':'0(0)';
+  T('rpan-team').textContent = d.bt.name;
+  T('rpan-sc').textContent = d.i.runs+'/'+d.i.wkts;
+  T('rpan-ov').textContent = d.ov+'.'+d.bl;
+  T('rpan-bwl-n').textContent = d.bw?d.bw.name:'–';
+  T('rpan-bwl-s').textContent = d.bw?(d.bw.r+'-'+d.bw.w+' '+d.bw.o+'.'+(d.bw.b||0)):'0-0 0.0';
+  refreshRotatingStats(d);
+}
+
+function render(data){
+  if(!data || !data.innings){
+    RIB_THEMES.forEach(t=>{ const el = document.getElementById('rib-'+t); if(el) el.style.display = 'none'; });
+    return;
+  }
+  const d = buildD(data);
+  if(!d) return;
+
+  const style = data.ribbonStyle || 'off';
+  if(style === 'off' || !RIB_THEMES.includes(style)){
+    RIB_THEMES.forEach(t=>{ const el = document.getElementById('rib-'+t); if(el) el.style.display = 'none'; });
+    return;
+  }
+  RIB_THEMES.forEach(t=>{
+    const el = document.getElementById('rib-'+t);
+    if(el) el.style.display = (t===style) ? 'block' : 'none';
+  });
+
+  if(style==='ipl') rendIPL(d);
+  else if(style==='local') rendLocal(d);
+  else if(style==='ticker') rendTicker(d);
+  else if(style==='toss') rendToss(d);
+  else if(style==='crickpro') rendLivebar(d);
+  else if(style==='chase') rendChase(d);
+  else if(style==='gold') rendTheme('rg-', d, 'rg-ob-ball');
+  else if(style==='neon') rendTheme('rn-', d, 'rn-ball');
+  else if(style==='fire') rendTheme('rf-', d, 'rf-ball');
+  else if(style==='galaxy') rendTheme('rpg-', d, 'rpg-ball');
+  else if(style==='clean') rendTheme('rcl-', d, 'rcl-ball');
+  else if(style==='glass') rendTheme('rgl-', d, 'rgl-ball');
+  else if(style==='sixes') rendSixes(d);
+  else if(style==='panel') rendPanel(d);
+}
+
+// ═══ Full-screen animations: Break / 3rd Umpire / FX (4,6,Out,Wide,No-ball) ═══
+let lastTuShowTs = 0, lastTuDecisionTs = 0, lastFxTs = 0, tuAutoHideTimer = null;
+
+function handleLiveEvents(data){
+  const brk = document.getElementById('dx-break');
+  if(data.breakActive){
+    document.getElementById('dxbrk-icon').textContent = data.breakInfo?.icon || '⏸';
+    const t = document.getElementById('dxbrk-title');
+    t.textContent = data.breakInfo?.title || 'BREAK';
+    t.style.color = data.breakInfo?.color || '#00d4ff';
+    document.getElementById('dxbrk-sub').textContent = data.breakInfo?.sub || '';
+    const ci = data.ci, i = data.innings[ci];
+    if(i){
+      document.getElementById('dxbrk-sc').textContent = i.runs+'/'+i.wkts;
+      document.getElementById('dxbrk-ov').textContent = i.overs+'.'+(i.gb||0);
+      document.getElementById('dxbrk-crr').textContent = getCRR(i);
+    }
+    brk.classList.add('show');
+  } else { brk.classList.remove('show'); }
+
+  const tu = document.getElementById('dx-tu');
+  const isFreshShow = data.tuShowTs && data.tuShowTs !== lastTuShowTs;
+  const isFreshDecision = data.tuDecision && data.tuDecisionTs && data.tuDecisionTs !== lastTuDecisionTs;
+  if(isFreshShow){
+    lastTuShowTs = data.tuShowTs;
+    if(tuAutoHideTimer){ clearTimeout(tuAutoHideTimer); tuAutoHideTimer=null; }
+    tu.classList.add('show');
+    document.getElementById('dxtu-pending').style.display = 'block';
+    document.getElementById('dxtu-decided').style.display = 'none';
+  } else if(data.tuActive===false && !isFreshDecision && (!data.tuDecisionTs || data.tuDecisionTs===lastTuDecisionTs)){
+    if(tuAutoHideTimer){ clearTimeout(tuAutoHideTimer); tuAutoHideTimer=null; }
+    tu.classList.remove('show');
+  }
+  if(isFreshDecision){
+    lastTuDecisionTs = data.tuDecisionTs;
+    const showDecision = ()=>{
+      document.getElementById('dxtu-pending').style.display = 'none';
+      document.getElementById('dxtu-decided').style.display = 'block';
+      const dec = document.getElementById('dxtu-dec');
+      dec.className = 'dxtu-decision ' + data.tuDecision.verdict;
+      dec.textContent = data.tuDecision.text;
+      dec.style.display = 'block';
+      const decSub = document.getElementById('dxtu-dec-sub');
+      decSub.textContent = data.tuDecision.sub || '';
+      decSub.style.display = 'block';
+      tu.classList.add('show');
+      if(tuAutoHideTimer) clearTimeout(tuAutoHideTimer);
+      tuAutoHideTimer = setTimeout(()=>{ tu.classList.remove('show'); tuAutoHideTimer=null; }, 2000);
+    };
+    if(isFreshShow){ setTimeout(showDecision, 1100); } else { showDecision(); }
+  } else if(data.tuActive===false && !data.tuDecision){
+    tu.classList.remove('show');
+  }
+
+  if(data.fxEvent && data.fxTs && data.fxTs !== lastFxTs){
+    lastFxTs = data.fxTs;
+    showFx(data.fxEvent);
+  }
+}
+
+function showFx(fx){
+  const num = document.getElementById('rfx-num');
+  const txt = document.getElementById('rfx-txt');
+  const sub = document.getElementById('rfx-sub');
+  const conf = document.getElementById('rfx-conf');
+  const fxWrap = document.getElementById('rib-fx-inline');
+  const isNumeric = (fx.fxType === 'four' || fx.fxType === 'six');
+
+  if(isNumeric){
+    txt.style.display = 'none'; txt.classList.remove('show');
+    num.style.display = 'inline-block';
+    num.className = 'rfx-num ' + fx.fxType;
+    num.textContent = fx.fxType === 'four' ? '4' : '6';
+    num.classList.remove('show');
+    void num.offsetWidth;
+    num.classList.add('show');
+  } else {
+    num.style.display = 'none'; num.classList.remove('show');
+    txt.style.display = 'inline-block';
+    txt.className = 'rfx-text ' + fx.fxType;
+    txt.textContent = fx.text;
+  }
+
+  sub.textContent = fx.sub || '';
+  const colorMap = {four:'#00bfff', six:'#ff6600', out:'#ff1744', wide:'#ffd700', noball:'#ff4488'};
+  sub.style.color = colorMap[fx.fxType] || '#fff';
+  conf.innerHTML = '';
+  if(fx.fxType !== 'out'){
+    let colors;
+    if(fx.fxType === 'four') colors = ['#00d4ff','#00aaff','#fff'];
+    else if(fx.fxType === 'six') colors = ['#ff6600','#ff9900','#ffd700'];
+    else if(fx.fxType === 'wide') colors = ['#ffd700','#ffaa00','#fff'];
+    else if(fx.fxType === 'noball') colors = ['#ff4488','#ff1744','#fff'];
+    else colors = ['#fff','#ccc'];
+    for(let k=0; k<26; k++){
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = 'left:'+Math.random()*100+'%;top:'+(Math.random()*10-10)+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';animation-delay:'+Math.random()*.4+'s;animation-duration:'+(.7+Math.random()*.5)+'s;width:'+(5+Math.random()*6)+'px;height:'+(5+Math.random()*6)+'px;transform:rotate('+Math.random()*360+'deg);';
+      conf.appendChild(p);
+    }
+  }
+
+  // Find the currently visible ribbon theme and hide it — the FX bar takes over
+  // its exact spot (same height) so the animation reads like a TV lower-third
+  // takeover, with no score/text showing underneath while it plays.
+  const activeTheme = RIB_THEMES.find(t=>{
+    const el = document.getElementById('rib-'+t);
+    return el && getComputedStyle(el).display !== 'none';
+  });
+  const activeEl = activeTheme ? document.getElementById('rib-'+activeTheme) : null;
+  const h = activeEl ? activeEl.offsetHeight : 64;
+  fxWrap.style.height = h+'px';
+  if(activeEl) activeEl.style.visibility = 'hidden';
+  fxWrap.style.display = 'block';
+  setTimeout(()=>{
+    fxWrap.style.display = 'none';
+    if(activeEl) activeEl.style.visibility = '';
+  }, 2200);
+}
+
+function connectRibbon(bid){
+  if(!db || !bid) return;
+  if(unsubscribe) unsubscribe();
+  unsubscribe = db.collection('liveDisplays').doc(bid).onSnapshot(doc => {
+    if(!doc.exists) return; // just wait quietly — scorer app hasn't synced anything yet
+    const data = doc.data();
+    render(data);
+    handleLiveEvents(data);
+  }, err => { console.error('Ribbon sync error:', err); });
+}
+
+window.addEventListener('load', () => {
+  try {
+    if(typeof firebase !== 'undefined'){
+      if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+    }
+  } catch(e) { console.error('Firebase init error:', e); }
+
+  const params = new URLSearchParams(window.location.search);
+  const bid = (params.get('bid') || '').trim().toUpperCase();
+  if(bid){ connectRibbon(bid); }
+  // If ?bid= is missing, the overlay just stays blank — set up the link once from the Scoring App
+  // ("🔗 আপনার স্থায়ী Ribbon Link" box) and it will always work after that, no typing needed live.
+});
+</script>
+</body>
+</html>
